@@ -1,0 +1,20 @@
+<form method="get" accept-charset="utf-8" ng-submit="submit($event)" class="form">
+  <div class="form-group">
+    <label for="room_video_id">YouTube video id:</label>
+    <input type="text" name="room[video_id]" id="room_video_id" value="" ng-model="room.videoId" />
+  </div>
+  <button type="submit" class="btn btn-default">As</button>
+</form>
+
+<div ng-show="room.url">
+  <a href="{{room.url}}" target="_blank">{{room.url}}</a>
+  |
+  <a href="#toggle_canvas" ng-click="toggleCanvas($event)">turn {{canvasState}} drawing</a>
+</div>
+
+<div id="player-wrapper">
+  <div id="player"></div>
+  <div id="player-canvas-wrapper" style="display: none;">
+    <canvas id="canvas"></canvas>
+  </div>
+</div>
