@@ -61,7 +61,6 @@ angular.module('yt2getherApp')
       var id = Math.random().toString(36).substring(7);
 
       $scope.room.id = id;
-      $scope.room.id = parseVideoId(id);
       $scope.room.url = window.location.origin+"/#/room/"+id;
 
       socket.emit("rooms/create", $scope.room);
