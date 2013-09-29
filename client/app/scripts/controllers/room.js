@@ -3,8 +3,9 @@
 angular.module('yt2getherApp')
   .controller('RoomCtrl', function ($scope, $routeParams, socket, $q) {
     var embedVideo
-      , playerDeffered = $q.defer()
-      , playerPromise = playerDeffered.promise
+      , executeCommand
+      , player
+      , roomState
       , elCanvasWrapper = $("#player-canvas-wrapper");
 
     $scope.room = { id: $routeParams.id };
@@ -13,7 +14,7 @@ angular.module('yt2getherApp')
       $("#player").replaceWith($("<div></div>", {id: "player"}));
       new YT.Player('player', {
         playerVars: {
-          'controls': 1,
+          'controls': 0,
           'wmode': 'opaque'
         },
         height: '390',
@@ -21,31 +22,30 @@ angular.module('yt2getherApp')
         videoId: id,
         events: {
           'onReady': function(e){
-            playerDeffered.resolve(e.target);
-            window.pl = e.target;
+            player = e.target;
+            if(roomState) executeCommand(roomState);
           }
         }
       });
     };
 
-    // socket events
-    socket.on("rooms/set", function(data){
-      console.log(data);
+    executeCommand = function(data){
       var ts = (new Date()).getTime();
 
       // load video
       if($scope.room.videoId !== data.videoId) embedVideo(data.videoId);
 
-      // playback
-      if(data.state === 1){
-        playerPromise.then(function(player){
+      // playback controll
+      if(player){
+        // play
+        if(data.state === 1){
           player.seekTo(data.time+((ts-data.ts)/1000)+0.5).playVideo();
-        });
-      }
-      if(data.state === 2){
-        playerPromise.then(function(player){
+        }
+
+        // pause
+        if(data.state === 2){
           player.pauseVideo().seekTo(data.time);
-        });
+        }
       }
 
       // canvas
@@ -53,8 +53,13 @@ angular.module('yt2getherApp')
         elCanvasWrapper.html($("<img />", {src: data.canvasSnapshot}));
       }
 
-
       $scope.room = data;
+    };
+
+    // socket events
+    socket.on("rooms/set", function(data){
+      roomState = data;
+      executeCommand(data);
     });
 
     // get info about room

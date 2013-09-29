@@ -54,7 +54,6 @@ angular.module('yt2getherApp')
           }
         }
       });
-      window.pl = player;
     };
 
     createRoom = function(){
@@ -84,6 +83,5 @@ angular.module('yt2getherApp')
       e.preventDefault();
       elCanvasWrapper.toggle();
       $scope.canvasState = (elCanvasWrapper.is(":visible") ? "off" : "on");
-
     };
   });
