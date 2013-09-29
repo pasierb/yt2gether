@@ -4,6 +4,7 @@ angular.module('yt2getherApp')
   .controller('MainCtrl', function ($scope, socket) {
     var embedVideo
       , createRoom
+      , parseVideoId
       , player
       , elCanvasWrapper = $("#player-canvas-wrapper")
       , elCanvas = $("#canvas")
@@ -21,6 +22,14 @@ angular.module('yt2getherApp')
       roomData.canvasSnapshot = elCanvas[0].toDataURL("image/png");
       socket.emit("rooms/update", roomData);
     }).sketch();
+
+    parseVideoId = function(s){
+      var match = s.match(/v=([^&]*)/)
+      if(match){
+        return match[1];
+      }
+      return s;
+    };
 
     embedVideo = function(id){
       $("#player").replaceWith($("<div></div>", {id: "player"}));
@@ -52,6 +61,7 @@ angular.module('yt2getherApp')
       var id = Math.random().toString(36).substring(7);
 
       $scope.room.id = id;
+      $scope.room.id = parseVideoId(id);
       $scope.room.url = window.location.origin+"/#/room/"+id;
 
       socket.emit("rooms/create", $scope.room);
@@ -63,6 +73,8 @@ angular.module('yt2getherApp')
 
     $scope.submit = function(){
       if(!$scope.room.id) createRoom();
+
+      $scope.room.videoId = parseVideoId($scope.room.videoId);
 
       embedVideo($scope.room.videoId);
 
