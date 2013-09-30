@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('yt2getherApp')
-  .controller('RoomCtrl', function ($scope, $routeParams, socket, $q) {
+  .controller('RoomCtrl', function ($scope, $routeParams, socket) {
     var embedVideo
       , executeCommand
       , player
